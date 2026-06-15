@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>World Cup 2026 — Prediction Tracker</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;600;700&display=swap');
+
+    :root {
+      --gold: #f0b429;
+      --dark: #0a0e1a;
+      --card: #111827;
+      --card2: #1a2236;
+      --green: #22c55e;
+      --red: #ef4444;
+      --blue: #3b82f6;
+      --gray: #6b7280;
+      --text: #f1f5f9;
+      --subtext: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--dark);
+      color: var(--text);
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── HERO HEADER ── */
+    .hero {
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a2a4a 50%, #0a0e1a 100%);
+      border-bottom: 3px solid var(--gold);
+      padding: 40px 20px 30px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '⚽';
+      position: absolute;
+      font-size: 300px;
+      opacity: 0.03;
+      top: -60px; left: -60px;
+    }
+    .hero::after {
+      content: '🏆';
+      position: absolute;
+      font-size: 300px;
+      opacity: 0.03;
+      bottom: -80px; right: -40px;
+    }
+    .hero h1 {
+      font-family: 'Bebas Neue', cursive;
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      letter-spacing: 4px;
+      color: var(--gold);
+      text-shadow: 0 0 40px rgba(240,180,41,0.4);
+      line-height: 1;
+    }
+    .hero p {
+      color: var(--subtext);
+      font-size: 0.95rem;
+      margin-top: 8px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .trophy-icon {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 10px;
+      filter: drop-shadow(0 0 20px rgba(240,180,41,0.6));
+    }
+
+    /* ── LAYOUT ── */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 30px 16px 60px;
+    }
+
+    /* ── LEADERBOARD ── */
+    .leaderboard {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+    .player-card {
+      background: var(--card);
+      border: 1px solid rgba(240,180,41,0.2);
+      border-radius: 16px;
+      padding: 24px 40px;
+      text-align: center;
+      min-width: 200px;
+      position: relative;
+      transition: transform 0.2s;
+    }
+    .player-card:hover { transform: translateY(-4px); }
+    .player-card.leader {
+      border-color: var(--gold);
+      box-shadow: 0 0 30px rgba(240,180,41,0.2);
+    }
+    .player-card .crown {
+      position: absolute;
+      top: -18px; left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.6rem;
+    }
+    .player-card .player-name {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--subtext);
+      margin-bottom: 8px;
+    }
+    .player-card .score {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 4rem;
+      color: var(--gold);
+      line-height: 1;
+    }
+    .player-card .score-label {
+      font-size: 0.75rem;
+      color: var(--subtext);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .vs-divider {
+      display: flex;
+      align-items: center;
+      color: var(--subtext);
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.8rem;
+      letter-spacing: 2px;
+    }
+
+    /* ── SECTION TITLE ── */
+    .section-title {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.8rem;
+      letter-spacing: 3px;
+      color: var(--gold);
+      margin: 36px 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, rgba(240,180,41,0.4), transparent);
+    }
+
+    /* ── MATCH TABLE ── */
+    .round-card {
+      background: var(--card);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 30px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .round-header {
+      background: linear-gradient(90deg, #1a2a4a, #111827);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid rgba(240,180,41,0.2);
+    }
+    .round-header span {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.3rem;
+      letter-spacing: 2px;
+      color: var(--gold);
+    }
+    .round-header small {
+      color: var(--subtext);
+      font-size: 0.78rem;
+      margin-left: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    thead th {
+      padding: 10px 14px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--subtext);
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      text-align: center;
+    }
+    thead th:first-child { text-align: left; }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      transition: background 0.15s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+
+    td {
+      padding: 14px;
+      font-size: 0.88rem;
+      text-align: center;
+      vertical-align: middle;
+    }
+    td:first-child { text-align: left; }
+
+    .match-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+    .match-group {
+      font-size: 0.7rem;
+      color: var(--subtext);
+      margin-top: 2px;
+    }
+
+    .score-pill {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      letter-spacing: 1px;
+      min-width: 60px;
+    }
+    .score-actual {
+      background: rgba(59,130,246,0.15);
+      color: #93c5fd;
+      border: 1px solid rgba(59,130,246,0.3);
+    }
+    .score-correct {
+      background: rgba(34,197,94,0.15);
+      color: #86efac;
+      border: 1px solid rgba(34,197,94,0.3);
+    }
+    .score-wrong {
+      background: rgba(239,68,68,0.08);
+      color: #fca5a5;
+      border: 1px solid rgba(239,68,68,0.2);
+    }
+    .score-pending {
+      background: rgba(107,114,128,0.15);
+      color: var(--subtext);
+      border: 1px solid rgba(107,114,128,0.2);
+      font-style: italic;
+    }
+
+    .point-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+    .point-3 {
+      background: rgba(34,197,94,0.25);
+      color: #4ade80;
+      border: 1px solid rgba(34,197,94,0.5);
+      width: 32px; height: 32px;
+      font-size: 0.95rem;
+    }
+    .point-2 {
+      background: rgba(234,179,8,0.2);
+      color: #fde047;
+      border: 1px solid rgba(234,179,8,0.4);
+      width: 32px; height: 32px;
+    }
+    .point-1 {
+      background: rgba(249,115,22,0.2);
+      color: #fb923c;
+      border: 1px solid rgba(249,115,22,0.4);
+    }
+    .point-0 {
+      background: rgba(107,114,128,0.15);
+      color: var(--gray);
+      border: 1px solid rgba(107,114,128,0.2);
+    }
+    .point-dash {
+      color: var(--gray);
+      font-size: 1rem;
+    }
+
+    /* ── SCORING RULES BOX ── */
+    .scoring-rules {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 30px;
+      border: 1px solid rgba(240,180,41,0.15);
+    }
+    .scoring-rules h3 {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.1rem;
+      letter-spacing: 2px;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+    .rules-grid {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .rule-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 8px;
+      padding: 8px 14px;
+      flex: 1;
+      min-width: 200px;
+    }
+    .rule-pts {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.6rem;
+      line-height: 1;
+    }
+    .rule-pts.gold { color: var(--gold); }
+    .rule-pts.green { color: #4ade80; }
+    .rule-pts.orange { color: #fb923c; }
+    .rule-pts.gray { color: var(--gray); }
+    .rule-desc {
+      font-size: 0.78rem;
+      color: var(--subtext);
+      line-height: 1.4;
+    }
+    .rule-desc strong { color: var(--text); }
+
+    /* round totals row */
+    .round-total td {
+      background: rgba(240,180,41,0.05);
+      border-top: 1px solid rgba(240,180,41,0.2);
+      font-weight: 700;
+      color: var(--gold);
+      font-size: 0.85rem;
+    }
+
+    /* ── LEGEND ── */
+    .legend {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+      background: var(--card);
+      border-radius: 12px;
+      padding: 14px 20px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      color: var(--subtext);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: var(--subtext);
+      font-size: 0.75rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      letter-spacing: 1px;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      td, th { padding: 10px 8px; font-size: 0.78rem; }
+      .match-name { font-size: 0.78rem; }
+      .score-pill { padding: 3px 8px; font-size: 0.78rem; min-width: 48px; }
+      .player-card { padding: 20px 24px; min-width: 140px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <span class="trophy-icon">🏆</span>
+  <h1>World Cup 2026</h1>
+  <p>Prediction Tracker &nbsp;|&nbsp; The Broker vs The Fan</p>
+</div>
+
+<div class="container">
+
+  <!-- LEADERBOARD -->
+  <div class="section-title">⚽ Live Leaderboard</div>
+  <div class="leaderboard">
+    <div class="player-card" id="card-fan">
+      <div class="player-name">The Fan</div>
+      <div class="score" id="fan-total">4</div>
+      <div class="score-label">Points</div>
+    </div>
+    <div class="vs-divider">VS</div>
+    <div class="player-card" id="card-broker">
+      <div class="player-name">The Broker</div>
+      <div class="score" id="broker-total">2</div>
+      <div class="score-label">Points</div>
+    </div>
+  </div>
+
+  <!-- SCORING RULES -->
+  <div class="scoring-rules">
+    <h3>⚖️ Scoring Rules</h3>
+    <div class="rules-grid">
+      <div class="rule-item">
+        <div class="rule-pts gold">3</div>
+        <div class="rule-desc"><strong>Exact Scoreline</strong><br/>Both scores perfectly correct</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-pts green">2</div>
+        <div class="rule-desc"><strong>One Score Correct</strong><br/>Either home or away score matches</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-pts orange">1</div>
+        <div class="rule-desc"><strong>Correct Winner / Draw</strong><br/>Right outcome, wrong scores</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-pts gray">0</div>
+        <div class="rule-desc"><strong>No Match</strong><br/>Wrong outcome and wrong scores</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="legend-item">
+      <span class="score-pill score-actual">1 – 1</span> Actual Result
+    </div>
+    <div class="legend-item">
+      <span class="score-pill score-correct">1 – 1</span> Exact / Partial Correct
+    </div>
+    <div class="legend-item">
+      <span class="score-pill score-wrong">2 – 0</span> Wrong Prediction ✗
+    </div>
+    <div class="legend-item">
+      <span class="score-pill score-pending">TBD</span> Pending
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       ROUND 1 — Saturday 13 June
+  ══════════════════════════════════════════ -->
+  <div class="section-title">📅 Round 1</div>
+  <div class="round-card">
+    <div class="round-header">
+      <span>Saturday 13 June 2026</span>
+      <small>Group Stage — Groups B, C, D</small>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Match</th>
+          <th>Actual</th>
+          <th>Fan's Pick</th>
+          <th>Broker's Pick</th>
+          <th>Fan Pts</th>
+          <th>Broker Pts</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="match-name">Qatar vs Switzerland</div>
+            <div class="match-group">Group B</div>
+          </td>
+          <td><span class="score-pill score-actual">1 – 1</span></td>
+          <td><span class="score-pill score-wrong">0 – 1</span></td>
+          <td><span class="score-pill score-wrong">0 – 2</span></td>
+          <td><span class="point-badge point-0" title="Wrong winner, no score correct">0</span></td>
+          <td><span class="point-badge point-0" title="Wrong winner, no score correct">0</span></td>
+        </tr>
+        <tr>
+          <td>
+            <div class="match-name">Brazil vs Morocco</div>
+            <div class="match-group">Group C</div>
+          </td>
+          <td><span class="score-pill score-actual">1 – 1</span></td>
+          <td><span class="score-pill score-correct">3 – 1</span></td>
+          <td><span class="score-pill score-wrong">2 – 0</span></td>
+          <td><span class="point-badge point-2" title="Morocco score correct (1), but wrong winner">2</span></td>
+          <td><span class="point-badge point-0" title="Wrong winner, no score correct">0</span></td>
+        </tr>
+        <tr>
+          <td>
+            <div class="match-name">Haiti vs Scotland</div>
+            <div class="match-group">Group C</div>
+          </td>
+          <td><span class="score-pill score-actual">0 – 1</span></td>
+          <td><span class="score-pill score-correct">0 – 3</span></td>
+          <td><span class="score-pill score-correct">0 – 2</span></td>
+          <td><span class="point-badge point-2" title="Haiti score correct (0) + correct winner">2</span></td>
+          <td><span class="point-badge point-2" title="Haiti score correct (0) + correct winner">2</span></td>
+        </tr>
+        <tr>
+          <td>
+            <div class="match-name">Australia vs Turkiye</div>
+            <div class="match-group">Group D</div>
+          </td>
+          <td><span class="score-pill score-actual">2 – 0</span></td>
+          <td><span class="score-pill score-wrong">1 – 1</span></td>
+          <td><span class="score-pill score-wrong">1 – 2</span></td>
+          <td><span class="point-badge point-0" title="Wrong winner, no score correct">0</span></td>
+          <td><span class="point-badge point-0" title="Wrong winner, no score correct">0</span></td>
+        </tr>
+        <tr class="round-total">
+          <td colspan="4">Round 1 Total</td>
+          <td>4</td>
+          <td>2</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       ROUND 2 — Sunday 14 & Monday 15 June
+  ══════════════════════════════════════════ -->
+  <div class="section-title">📅 Round 2</div>
+  <div class="round-card">
+    <div class="round-header">
+      <span>Sunday 14 & Monday 15 June 2026</span>
+      <small>Group Stage — Groups E, F</small>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Match</th>
+          <th>Actual</th>
+          <th>Fan's Pick</th>
+          <th>Broker's Pick</th>
+          <th>Fan Pts</th>
+          <th>Broker Pts</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="match-name">Germany vs Curaçao</div>
+            <div class="match-group">Group E</div>
+          </td>
+          <td><span class="score-pill score-pending">TBD</span></td>
+          <td><span class="score-pill score-pending">3 – 0</span></td>
+          <td><span class="score-pill score-pending">4 – 0</span></td>
+          <td><span class="point-dash">—</span></td>
+          <td><span class="point-dash">—</span></td>
+        </tr>
+        <tr>
+          <td>
+            <div class="match-name">Netherlands vs Japan</div>
+            <div class="match-group">Group F</div>
+          </td>
+          <td><span class="score-pill score-pending">TBD</span></td>
+          <td><span class="score-pill score-pending">1 – 0</span></td>
+          <td><span class="score-pill score-pending">2 – 1</span></td>
+          <td><span class="point-dash">—</span></td>
+          <td><span class="point-dash">—</span></td>
+        </tr>
+        <tr>
+          <td>
+            <div class="match-name">Ivory Coast vs Ecuador</div>
+            <div class="match-group">Group E</div>
+          </td>
+          <td><span class="score-pill score-pending">TBD</span></td>
+          <td><span class="score-pill score-pending">0 – 1</span></td>
+          <td><span class="score-pill score-pending">1 – 2</span></td>
+          <td><span class="point-dash">—</span></td>
+          <td><span class="point-dash">—</span></td>
+        </tr>
+        <tr>
+          <td>
+            <div class="match-name">Sweden vs Tunisia</div>
+            <div class="match-group">Group F</div>
+          </td>
+          <td><span class="score-pill score-pending">TBD</span></td>
+          <td><span class="score-pill score-pending">1 – 0</span></td>
+          <td><span class="score-pill score-pending">2 – 0</span></td>
+          <td><span class="point-dash">—</span></td>
+          <td><span class="point-dash">—</span></td>
+        </tr>
+        <tr class="round-total">
+          <td colspan="4">Round 2 Total</td>
+          <td>—</td>
+          <td>—</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       OVERALL SUMMARY
+  ══════════════════════════════════════════ -->
+  <div class="section-title">🏅 Overall Summary</div>
+  <div class="round-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Round</th>
+          <th>Matches</th>
+          <th>Fan Points</th>
+          <th>Broker Points</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Round 1</strong> — Sat 13 Jun</td>
+          <td style="color:var(--subtext)">4</td>
+          <td><span class="point-badge point-2">4</span></td>
+          <td><span class="point-badge point-2">2</span></td>
+        </tr>
+        <tr>
+          <td><strong>Round 2</strong> — Sun 14 / Mon 15 Jun</td>
+          <td style="color:var(--subtext)">4</td>
+          <td><span class="point-dash">—</span></td>
+          <td><span class="point-dash">—</span></td>
+        </tr>
+        <tr class="round-total">
+          <td colspan="2">Grand Total</td>
+          <td id="fan-grand">4</td>
+          <td id="broker-grand">2</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div><!-- /container -->
+
+<footer>
+  World Cup 2026 &nbsp;|&nbsp; USA · Canada · Mexico &nbsp;|&nbsp; The Broker vs The Fan &nbsp;|&nbsp; Updated after each round
+</footer>
+
+<script>
+  // Auto-highlight leader card
+  const fanTotal = parseInt(document.getElementById('fan-total').textContent);
+  const brokerTotal = parseInt(document.getElementById('broker-total').textContent);
+  if (fanTotal > brokerTotal) {
+    document.getElementById('card-fan').classList.add('leader');
+    document.getElementById('card-fan').innerHTML = '<div class="crown">👑</div>' + document.getElementById('card-fan').innerHTML;
+  } else if (brokerTotal > fanTotal) {
+    document.getElementById('card-broker').classList.add('leader');
+    document.getElementById('card-broker').innerHTML = '<div class="crown">👑</div>' + document.getElementById('card-broker').innerHTML;
+  }
+</script>
+
+</body>
+</html>
